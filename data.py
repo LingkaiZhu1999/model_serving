@@ -5,6 +5,7 @@ from pprint import pprint
 import os
 import urllib
 import csv
+import numpy as np
 
 def commit_count(project, sha='main', token='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'):
     """
@@ -46,36 +47,46 @@ def get_data():
     headers = {'Authorization': f'token {token}'}
     r = requests.get(query_url, headers=headers)
     repos = r.json()['items']
-    repo_url = []
     while 'next' in r.links.keys():
         r = requests.get(r.links['next']['url'], headers=headers)
         repos.extend(r.json()['items'])
         if len(repos) == 1000:
             break
-    data_ = dict({'commits': [], 'forks': [], 'watchers': [], 'size': [], 'star': [], 'open_issue':[]})
+    data_ = []
     for repo in repos:
+        data = dict({'commits': None, 'forks': None, 'watchers': None, 'size': None, 'open_issue': None, 'star': None})
         default_branch = repo['default_branch']
         repo_url = repo['url']
         num_commit = commit_count(repo_url, default_branch)
-        fork = repo['forks']
-        watcher = repo['watchers']
-        star_gazers = repo['stargazers_count']
-        size = repo['size']
-        open_issue = repo['open_issues']
-        data_['commits'].append(num_commit)
-        data_['forks'].append(fork)
-        data_['watchers'].append(watcher)
-        data_['star'].append(star_gazers)
-        data_['size'].append(size)
-        data_['open_issue'].append(open_issue)
+        repo['num_commit'] = num_commit
+
+        fork = int(repo['forks'])
+        watcher = int(repo['watchers'])
+        star_gazers = int(repo['stargazers_count'])
+        size = int(repo['size'])
+        open_issue = int(repo['open_issues'])
+        # data['commits'].append(num_commit)
+        # data['forks'].append(fork)
+        # data['watchers'].append(watcher)
+        # data['star'].append(star_gazers)
+        # data['size'].append(size)
+        # data['open_issue'].append(open_issue)
+        data['commits'] = num_commit
+        data['forks'] = fork
+        data['watchers'] = watcher
+        data['star'] = star_gazers
+        data['size'] = size
+        data['open_issue'] = open_issue
+        data_.append(data)
     return data_
 
 def main():
-    data = get_data()
+    repos = get_data()
+    print(repos)
     with open('data.csv', 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=data.keys())
+        writer = csv.DictWriter(csvfile, fieldnames=repos[0].keys())
         writer.writeheader()
-        writer.writerows(data)
+        writer.writerows(repos)
 
 if __name__=="__main__":
     main()
