@@ -1,4 +1,4 @@
-from workerA import add_nums, get_accuracy, get_predictions
+# from workerA import add_nums, get_accuracy, get_predictions
 
 from flask import (
    Flask,
@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return '<h1>Welcome to the Machine Learning Course.</h1>'
+    return render_template('index.html')
 
 @app.route("/accuracy", methods=['POST', 'GET'])
 def accuracy():
@@ -34,11 +34,11 @@ def predictions():
 
         results = get_accuracy.delay()
         accuracy = results.get()
-        
+
         final_results = predictions
 
-        return render_template('result.html', accuracy=accuracy ,final_results=final_results) 
-                    
+        return render_template('result.html', accuracy=accuracy ,final_results=final_results)
+
     return '''<form method="POST">
     <input type="submit">
     </form>'''
