@@ -5,13 +5,15 @@ from tensorflow.keras.models import model_from_json
 from tensorflow.keras.models import Sequential
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from tensorflow import keras
 model_json_file = './model.json'
 model_weights_file = './model.h5'
-data_file = './training_data.csv'
+data_file = './testing_data.csv'
 
 def load_data():
-    dataset = pd.read_csv('testing_data.csv')
+    dataset = pd.read_csv(data_file)
     # split into input (X) and output (y) variables
     X = dataset.drop(columns=['stargazers_count', 'id', 'private'])
     y = dataset['stargazers_count']
