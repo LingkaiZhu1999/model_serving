@@ -62,9 +62,8 @@ def get_predictions():
 def get_accuracy():
     X, y = load_data()
     loaded_model = load_model()
-    loaded_model.compile(loss='mse', optimizer='Adam', metrics=['accuracy'])
-
-    score = loaded_model.evaluate(X, y, verbose=0)
+    predictions = pd.DataFrame(loaded_model.predict(X), columns=["Prediction"])
+    mse = np.mean((predictions.values.ravel() - y.values.ravel()) ** 2)
     #print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
-    return score[1]*100
+    return mse
 
