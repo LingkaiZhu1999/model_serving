@@ -3,30 +3,39 @@ from numpy import loadtxt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import model_from_json
+import pandas as pd
+from tensorflow import keras
 
 # load the dataset
-dataset = loadtxt('pima-indians-diabetes.csv', delimiter=',')
+dataset = pd.read_csv('training_data.csv')
 # split into input (X) and output (y) variables
-X = dataset[:,0:8]
-y = dataset[:,8]
+X = dataset.drop(columns=['stargazers_count', 'id', 'private'])
+y = dataset['stargazers_count']
 
 # define the keras model
-model = Sequential()
 
 #model.add(Dense(12, input_dim=8, activation='relu'))
 #model.add(Dense(8, activation='relu'))
 #model.add(Dense(1, activation='sigmoid')
 
-model.add(Dense(12, input_dim=8, activation='relu'))
-model.add(Dense(8, activation='relu'))
-model.add(Dense(1, activation='sigmoid'))
+num_input_layer = X.shape[1]
+### neural networks
+input = keras.Input(shape=num_input_layer)
+layer = keras.layers.Dense(40, activation="relu")(input)
+layer = keras.layers.Dense(100, activation="relu")(layer)
+layer = keras.layers.Dropout(.03)(layer)
+layer = keras.layers.Dense(10, activation="relu")(layer)
+layer = keras.layers.Dense(1, activation="relu")(layer)
 
 
 # compile the keras model
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-
+model = keras.models.Model(inputs=input, outputs=layer)
+optimizer = keras.optimizers.Adam(learning_rate=0.0001)
+model.compile(loss="mse", optimizer=optimizer)
+scaler = MinMaxScaler()
+xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=.1, shuffle=True)
 # fit the keras model on the dataset
-model.fit(X, y, epochs=150, batch_size=10)
+model.fit(xTrain, yTrain, epochs=500, verbose=0)
 
 # evaluate the keras model
 _, accuracy = model.evaluate(X, y)
