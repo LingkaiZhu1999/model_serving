@@ -1,20 +1,23 @@
 from celery import Celery
-
 from numpy import loadtxt
 import numpy as np
 from tensorflow.keras.models import model_from_json
 from tensorflow.keras.models import Sequential
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 model_json_file = './model.json'
 model_weights_file = './model.h5'
-data_file = './pima-indians-diabetes.csv'
+data_file = './training_data.csv'
 
 def load_data():
-    dataset =  loadtxt(data_file, delimiter=',')
-    X = dataset[:,0:8]
-    y = dataset[:,8]
-    y = list(map(int, y))
-    y = np.asarray(y, dtype=np.uint8)
+    dataset = pd.read_csv('testing_data.csv')
+    # split into input (X) and output (y) variables
+    X = dataset.drop(columns=['stargazers_count', 'id', 'private'])
+    y = dataset['stargazers_count']
+    scaler = MinMaxScaler()
+    X = scaler.fit_transform(X, y)
+
     return X, y
 
 def load_model():
