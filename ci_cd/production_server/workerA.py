@@ -46,7 +46,7 @@ def get_predictions():
     results ={}
     X, y = load_data()
     loaded_model = load_model()
-    predictions = loaded_model.predict_classes(X)
+    predictions = loaded_model.predict(X)
     results['y'] = y.tolist()
     results['predicted'] =[]
     #print ('results[y]:', results['y'])
@@ -60,7 +60,7 @@ def get_predictions():
 def get_accuracy():
     X, y = load_data()
     loaded_model = load_model()
-    loaded_model.compile(loss='mse', optimizer='rmsprop', metrics=['accuracy'])
+    loaded_model.compile(loss='mse', optimizer='Adam', metrics=['accuracy'])
 
     score = loaded_model.evaluate(X, y, verbose=0)
     #print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
