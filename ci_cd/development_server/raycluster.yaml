@@ -21,7 +21,7 @@ provider:
 
 # How Ray will authenticate with newly launched nodes.
 auth:
-    ssh_user: ubuntu
+    ssh_user: appuser
     # You can comment out `ssh_private_key` if the following machines don't need a private key for SSH access to the Ray
     # cluster:
     #   (1) The machine on which `ray up` is executed.
