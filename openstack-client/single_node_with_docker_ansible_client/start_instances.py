@@ -51,19 +51,31 @@ if os.path.isfile(cfg_file_path):
 else:
     sys.exit("prod-cloud-cfg.txt is not in current working directory")
 
-cfg_file_path =  os.getcwd()+'/dev-cloud-cfg.txt'
+cfg_file_path =  os.getcwd()+'/dev-cloud-cfg-1.txt'
 if os.path.isfile(cfg_file_path):
-    userdata_dev = open(cfg_file_path)
+    userdata_dev_1 = open(cfg_file_path)
 else:
     sys.exit("dev-cloud-cfg.txt is not in current working directory")    
+
+cfg_file_path =  os.getcwd()+'/dev-cloud-cfg-2.txt'
+if os.path.isfile(cfg_file_path):
+    userdata_dev_2 = open(cfg_file_path)
+else:
+    sys.exit("dev-cloud-cfg.txt is not in current working directory")
+
+cfg_file_path =  os.getcwd()+'/dev-cloud-cfg-3.txt'
+if os.path.isfile(cfg_file_path):
+    userdata_dev_3 = open(cfg_file_path)
+else:
+    sys.exit("dev-cloud-cfg.txt is not in current working directory")
 
 secgroups = ['Lingkai']
 
 print ("Creating instances ... ")
-instance_prod = nova.servers.create(name="prod_server_with_docker_"+str(identifier), image=image, flavor=flavor, key_name=key_name,userdata=userdata_prod, nics=nics,security_groups=secgroups)
-instance_dev_1 = nova.servers.create(name="dev_server_lingkai"+str(identifier), image=image, flavor=flavor, key_name=key_name,userdata=userdata_dev, nics=nics,security_groups=secgroups)
-instance_dev_2 = nova.servers.create(name="dev_server_lingkai"+str(identifier+1), image=image, flavor=flavor, key_name=key_name,userdata=userdata_dev, nics=nics,security_groups=secgroups)
-instance_dev_3 = nova.servers.create(name="dev_server_lingkai"+str(identifier+2), image=image, flavor=flavor, key_name=key_name,userdata=userdata_dev, nics=nics,security_groups=secgroups)
+instance_prod = nova.servers.create(name="prod_lingkai_"+str(identifier), image=image, flavor=flavor, key_name=key_name,userdata=userdata_prod, nics=nics,security_groups=secgroups)
+instance_dev_1 = nova.servers.create(name="dev_lingkai_"+str(identifier), image=image, flavor=flavor, key_name=key_name,userdata=userdata_dev_1, nics=nics,security_groups=secgroups)
+instance_dev_2 = nova.servers.create(name="dev_lingkai_"+str(identifier + 1), image=image, flavor=flavor, key_name=key_name,userdata=userdata_dev_2, nics=nics,security_groups=secgroups)
+instance_dev_3 = nova.servers.create(name="dev_lingkai_"+str(identifier + 2), image=image, flavor=flavor, key_name=key_name,userdata=userdata_dev_3, nics=nics,security_groups=secgroups)
 inst_status_prod = instance_prod.status
 inst_status_dev_1 = instance_dev_1.status
 inst_status_dev_2 = instance_dev_2.status
