@@ -11,20 +11,24 @@
      with_items: "{{groups['all']}}"
      become: true
      
-   #- name: Set hostname
-   #  hostname: name="{{inventory_hostname}}"
-   #  become: true
+   - name: Set hostname
+     hostname: name="{{inventory_hostname}}"
+     become: true
 
    - name: apt update
      apt: update_cache=yes upgrade=dist
      become: true
+#   - hosts: local
+#   - name: load ssh key
+#     shell: |
+#       ssh-add ~/cluster-keys/cluster-key
 
    - name: Download git repository
      become: true
      git:
-      repo: 'https://github.com/sztoor/model_serving.git'
-      dest: /model_serving 
-      
+      repo: 'https://LingkaiZhu1999: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@github.com/LingkaiZhu1999/model_serving.git'
+      dest: /model_serving
+
    - name: Change ownership of a directory
      become: true
      file:
@@ -118,7 +122,17 @@
      apt: pkg=python3-pip state=latest update_cache=true  
      become: true
 
-   - name: Install ML packages
+   - name: Install ML packages and Ray
      become: true
      pip: 
-      name: tensorflow==2.5.3, keras==2.4.1, numpy, future
+      name: tensorflow==2.5.3, keras==2.4.1, numpy, future, protobuf==3.20.1, ray[tune]
+   - name: Reboot
+     become: true
+     reboot:
+       reboot_timeout: 300
+#   - name: Starting the ray cluster
+#       become: true
+#       shell: ray up
+#       args:
+#         chdir: /model_serving/ci_cd/production_server
+
