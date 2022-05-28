@@ -131,19 +131,26 @@
      become: true
      reboot:
        reboot_timeout: 300
-   - name: Copy file with owner and permissions
-     ansible.builtin.copy:
-       src: ~/cluster-keys/cluster-key
-       dest: ~/.ssh/id_rsa
-       owner: appuser
-       group: appuser
-       mode: '0600'
+#   - name: Copy file with owner and permissions
+#     ansible.builtin.copy:
+#       src: ~/cluster-keys/cluster-key
+#       dest: ~/.ssh/id_rsa
+#       owner: appuser
+#       group: appuser
+#       mode: '0600'
+   - name: Generate ssh keys for ray cluster
+     shell: ssh-keygen -q -t rsa -f /home/appuser/.ssh/id_rsa -C "" -N "" -y
+
+   - name: Copy public key to authorized keys
+     shell: cat id_rsa.pub >> authorized_keys
+     args:
+       chdir: /home/appuser/.ssh
    - name: Init ray
      shell: python3 ray_init.py
      args:
        chdir: /model_serving/ci_cd/development_server
    - name: Start ray cluster
-     shell: ray up ./raycluster.yaml
+     shell: ray up ./raycluster.yaml -y
      args:
       chdir: /model_serving/ci_cd/development_server
 
