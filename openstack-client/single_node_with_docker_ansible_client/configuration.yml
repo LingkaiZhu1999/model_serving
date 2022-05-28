@@ -38,6 +38,7 @@
       owner: appuser
       group: appuser
 
+
 - hosts: prodserver
  
   vars_files:
@@ -130,6 +131,17 @@
      become: true
      reboot:
        reboot_timeout: 300
+   - name: Copy file with owner and permissions
+     ansible.builtin.copy:
+       src: ~/cluster-keys/cluster-key
+       dest: ~/.ssh/id_rsa
+       owner: appuser
+       group: appuser
+       mode: '0600'
+   - name: Init ray
+     shell: python3 ray_init.py
+     args:
+       chdir: /model_serving/ci_cd/development_server
    - name: Start ray cluster
      shell: ray up ./raycluster.yaml
      args:
