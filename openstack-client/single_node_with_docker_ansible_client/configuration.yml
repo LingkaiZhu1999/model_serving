@@ -126,10 +126,15 @@
      become: true
      pip: 
       name: tensorflow==2.5.3, keras==2.4.1, numpy, future, protobuf==3.20.1, ray[tune]
-   - name: Reboot
+   - name: Reboot to activate ray
      become: true
      reboot:
        reboot_timeout: 300
+   - name: Start ray cluster
+     shell: ray up ./raycluster.yaml
+     args:
+      chdir: /model_serving/ci_cd/development_server
+
 #   - name: Starting the ray cluster
 #       become: true
 #       shell: ray up
