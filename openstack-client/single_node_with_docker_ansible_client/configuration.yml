@@ -145,18 +145,69 @@
      shell: cat id_rsa.pub >> authorized_keys
      args:
        chdir: /home/appuser/.ssh
+   - name: Get ray head node's public key
+     fetch:
+     src: /home/appuser/.ssh/id_rsa.pub
+     dest: /home/ubuntu/
    - name: Init ray
      shell: python3 ray_init.py
      args:
        chdir: /model_serving/ci_cd/development_server
-   - name: Start ray cluster
-     shell: ray up ./raycluster.yaml -y
-     args:
-      chdir: /model_serving/ci_cd/development_server
 
 #   - name: Starting the ray cluster
 #       become: true
 #       shell: ray up
 #       args:
 #         chdir: /model_serving/ci_cd/production_server
+- hosts: raycluster
+
+  vars_files:
+   - setup_var.yml
+
+  tasks:
+   - name: Extra packages
+     apt: pkg=python3-pip state=latest update_cache=true
+     become: true
+
+   - name: Install ML packages and Ray
+     become: true
+     pip:
+      name: tensorflow==2.5.3, keras==2.4.1, numpy, future, protobuf==3.20.1, ray[tune]
+   - name: Reboot to activate ray
+     become: true
+     reboot:
+       reboot_timeout: 300
+#   - name: Copy file with owner and permissions
+#     ansible.builtin.copy:
+#       src: ~/cluster-keys/cluster-key
+#       dest: ~/.ssh/id_rsa
+#       owner: appuser
+#       group: appuser
+#       mode: '0600'
+   - name: Generate ssh keys for ray cluster
+     shell: ssh-keygen -q -t rsa -f /home/appuser/.ssh/id_rsa -C "" -N "" -y
+
+   - name: Copy public key to authorized keys
+     shell: cat id_rsa.pub >> authorized_keys
+     args:
+       chdir: /home/appuser/.ssh
+   - name: Init ray
+     shell: python3 ray_init.py
+     args:
+       chdir: /model_serving/ci_cd/development_server
+   - name: Distribute head node's public key to workers
+     ansible.builtin.copy:
+     src: /home/ubuntu/id_rsa.pub
+     dest: /home/appuser/
+   - name: Add public key to the authorized
+     shell: cat /home/appuser/id_rsa.pub >> /home/appuser/.ssh/authorized_keys
+- hosts: devserver
+  vars_files:
+    - setup_var.yml
+  tasks:
+    - name: Start ray cluster
+      shell: ray up ./raycluster.yaml -y
+      args:
+        chdir: /model_serving/ci_cd/development_server
+
 
