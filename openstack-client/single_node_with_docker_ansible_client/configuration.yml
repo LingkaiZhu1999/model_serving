@@ -113,10 +113,10 @@
      args: 
       chdir: /model_serving/ci_cd/production_server
    - name: Running Docker swarm
-       become: true
-       shell: docker stack deploy --compose-file docker-compose.yml
-       args:
-         chdir: /model_serving/ci_cd/production_server
+     become: true
+     shell: docker stack deploy --compose-file docker-compose.yml prod
+     args:
+      chdir: /model_serving/ci_cd/production_server
 
 - hosts: devserver
   
