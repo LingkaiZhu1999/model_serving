@@ -22,6 +22,8 @@ class GithubCrawler:
         else:
             self.auth = token
         self.header = {"Authorization": self.auth}
+        self.wanted_keys = ['watchers_count', "watchers", 'has_issues', 'has_projects', 'has_downloads', 'has_wiki', 'has_pages', 'forks_count',
+                            'archived', 'disabled', 'open_issues_count', 'allow_forking', 'is_template', 'forks', 'open_issues', 'score', "stargazers_count"]
 
     def checkRateLimit(self):
         """Show the current rate limit of the user"""
@@ -96,11 +98,9 @@ class GithubCrawler:
             "full_name": repo["full_name"],
 
         }
-        wanted_keys = ['watchers_count', 'has_issues', 'has_projects', 'has_downloads', 'has_wiki', 'has_pages', 'forks_count',
-                       'archived', 'disabled', 'open_issues_count', 'allow_forking', 'is_template', 'forks', 'open_issues', 'score', "stargazers_count"]
 
         for key, value in repo.items():
-            if key in wanted_keys:
+            if key in self.wanted_keys:
                 item[key] = value
         # Add number of commits
         item["n_commits"] = self.commit_count(
@@ -124,8 +124,6 @@ class GithubCrawler:
                 break
 
             repositories = response.json()["items"]
-            wanted_keys = ['watchers_count', 'has_issues', 'has_projects', 'has_downloads', 'has_wiki', 'has_pages', 'forks_count',
-                           'archived', 'disabled', 'open_issues_count', 'allow_forking', 'is_template', 'forks', 'open_issues', 'score', "stargazers_count"]
 
             wantedTypes = [int, float, bool]
             for repo in repositories:
@@ -137,7 +135,7 @@ class GithubCrawler:
 
                 }
                 for key, value in repo.items():
-                    if key in wanted_keys:
+                    if key in self.wanted_keys:
                         item[key] = value
                 print(item["full_name"])
                 # Add number of commits
@@ -158,11 +156,11 @@ class GithubCrawler:
 if __name__ == "__main__":
 
     bot = GithubCrawler()
-    # nRepos = int(input("Enter number of repos to fetch "))
-    # result = bot.fetchRepos(nRepos=nRepos)
+    nRepos = int(input("Enter number of repos to fetch "))
+    result = bot.fetchRepos(nRepos=nRepos)
 
-    # filename = input("Enter filename of where to store csv ")
-    # result.to_csv(filename, index_label=False, index=False)
+    filename = input("Enter filename of where to store csv ")
+    result.to_csv(filename, index_label=False, index=False)
 
-    repo = bot.fetchSpecificRepo("flutter/flutter")
-    print(repo.info())
+    # repo = bot.fetchSpecificRepo("flutter/flutter")
+    # print(repo.info())
