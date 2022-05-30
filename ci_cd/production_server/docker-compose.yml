@@ -1,9 +1,8 @@
 version: "3"
 services:
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    hostname: web
+    image: lingkaizhu123/production_server_web:latest
     restart: always
     ports:
       - "5100:5100"
@@ -21,9 +20,8 @@ services:
       - "5672:5672"
       - "15672:15672"
   worker_1:
-    build:
-      context: .
     hostname: worker_1
+    image: lingkaizhu123/production_server_web:latest
     entrypoint: celery
     command: -A workerA worker --loglevel=debug
     volumes:
