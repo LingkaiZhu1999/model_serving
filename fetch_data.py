@@ -12,6 +12,7 @@ import urllib
 class GithubCrawler:
 
     def __init__(self, token="") -> 'GithubCrawler':
+
         self.baseURL = "https://api.github.com"
         if token == "":
             try:
@@ -37,6 +38,13 @@ class GithubCrawler:
             print("Error sending request")
             print(response.status_code)
             print(response.reason)
+
+    def fetchRepoFromURL(self, url: str) -> pd.DataFrame:
+        """Get the metadata associated with a repository's URL"""
+        full_name = url.replace("https://github.com/", "")
+        full_name = "/".join(full_name.split("/", 2)[:2])
+        print(f"Fetching repo with name: {full_name}")
+        return self.fetchSpecificRepo(full_name)
 
     def fetchExample(self):
         """Show an example of the data sent by the GitHub search API"""
@@ -124,8 +132,6 @@ class GithubCrawler:
                 break
 
             repositories = response.json()["items"]
-
-            wantedTypes = [int, float, bool]
             for repo in repositories:
 
                 item = {
@@ -155,12 +161,15 @@ class GithubCrawler:
 
 if __name__ == "__main__":
 
-    bot = GithubCrawler()
-    nRepos = int(input("Enter number of repos to fetch "))
-    result = bot.fetchRepos(nRepos=nRepos)
+    ## Testing
 
-    filename = input("Enter filename of where to store csv ")
-    result.to_csv(filename, index_label=False, index=False)
+    bot = GithubCrawler()
+    # nRepos = int(input("Enter number of repos to fetch "))
+    # result = bot.fetchRepos(nRepos=nRepos)
+
+    # filename = input("Enter filename of where to store csv ")
+    # result.to_csv(filename, index_label=False, index=False)
+    print(bot.fetchRepoFromURL("https://github.com/modin-project/modin"))
 
     # repo = bot.fetchSpecificRepo("flutter/flutter")
     # print(repo.info())
