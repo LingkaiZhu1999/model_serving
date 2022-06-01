@@ -14,5 +14,8 @@ Then you can save the model in a standard way no matter what the model was in th
 To load a model, use the following syntax:
 model_process = ModelWrapper.loadModel("DIRECTORY_NAME"). Where directory name is the name of the model directory
 
+# Flask fron-end
+To start the front-end server, run the app.py file, needed html files for this application resides in the templates folder
+
 
 
