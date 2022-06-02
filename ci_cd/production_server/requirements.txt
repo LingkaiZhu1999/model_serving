@@ -6,4 +6,8 @@ keras==2.4.1
 future
 pandas
 scikit-learn
+dill
+requests
+email
+logging
 
