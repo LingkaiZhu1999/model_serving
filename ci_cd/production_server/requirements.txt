@@ -8,6 +8,5 @@ pandas
 scikit-learn
 dill
 requests
-email
-logging
+
 
