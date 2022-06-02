@@ -44,7 +44,6 @@ def train_github(config):
         loss="mse",
         optimizer=tf.keras.optimizers.Adam(learning_rate=config["lr"]),
     )
-    print(config['amsgrad'])
 
     model.fit(
         xTrain,

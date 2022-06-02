@@ -8,29 +8,11 @@ from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
-model_json_file = './model.json'
-model_weights_file = './model.h5'
-data_file = './testing_data.csv'
-
-def load_data():
-    dataset = pd.read_csv(data_file)
-    # split into input (X) and output (y) variables
-    X = dataset.drop(columns=['stargazers_count', 'id', 'private'])
-    y = dataset['stargazers_count']
-    scaler = MinMaxScaler()
-    X = scaler.fit_transform(X, y)
-
-    return X, y
+from save_model import ModelWrapper
 
 def load_model():
     # load json and create model
-    json_file = open(model_json_file, 'r')
-    loaded_model_json = json_file.read()
-    json_file.close()
-    loaded_model = model_from_json(loaded_model_json)
-    # load weights into new model
-    loaded_model.load_weights(model_weights_file)
-    #print("Loaded model from disk")
+    loaded_model = ModelWrapper.loadModel("best_model")
     return loaded_model
 
 # Celery configuration
@@ -39,31 +21,18 @@ CELERY_RESULT_BACKEND = 'rpc://'
 # Initialize Celery
 celery = Celery('workerA', broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
 
-@celery.task()
-def add_nums(a, b):
-   return a + b
 
 @celery.task
-def get_predictions():
-    results ={}
-    X, y = load_data()
-    loaded_model = load_model()
-    predictions = loaded_model.predict(X)
-    results['y'] = y.tolist()
-    results['predicted'] =[]
-    #print ('results[y]:', results['y'])
-    for i in range(len(results['y'])):
-        #print('%s => %d (expected %d)' % (X[i].tolist(), predictions[i], y[i]))
-        results['predicted'].append(predictions[i].tolist()[0])
-    #print ('results:', results)
-    return results
+def get_predictions(input_repo):
+    model = load_model()
+    prediction = model.predict(input_repo)
+    return prediction
 
 @celery.task
-def get_accuracy():
-    X, y = load_data()
-    loaded_model = load_model()
-    predictions = pd.DataFrame(loaded_model.predict(X), columns=["Prediction"])
-    mse = np.mean((predictions.values.ravel() - y.values.ravel()) ** 2)
+def get_accuracy(input_repo):
+    prediction = get_predictions(input_repo)
+    actual = input_repo["stargazers_count"]
+    mse = np.mean((prediction.values.ravel() - actual.values.ravel()) ** 2)
     #print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
     return mse
 

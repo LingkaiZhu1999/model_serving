@@ -1,47 +1,47 @@
-from workerA import add_nums, get_accuracy, get_predictions
+"""
+Main file for the front-end server
+"""
 
-from flask import (
-   Flask,
-   request,
-   jsonify,
-   Markup,
-   render_template 
-)
 
-#app = Flask(__name__, template_folder='./templates',static_folder='./static')
+from flask import Flask, render_template, request
+from workerA import get_predictions, load_model, get_accuracy
+from fetch_data import GithubCrawler
+import validators
+import pandas as pd
+
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'testing'
 
-@app.route("/")
+bot = GithubCrawler(token="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")
+
+
+@app.route("/", methods=["GET"])
 def index():
-    return render_template('index.html')
+    """Home page"""
+    return render_template("index.html")
 
-@app.route("/accuracy", methods=['POST', 'GET'])
-def accuracy():
-    if request.method == 'POST':
-        r = get_accuracy.delay()
-        a = r.get()
-        return '<h1>The accuracy is {}</h1>'.format(a)
 
-    return '''<form method="POST">
-    <input type="submit">
-    </form>'''
+@app.route("/", methods=["POST"])
+def predict():
+    """Route for getting a prediction on a url"""
+    url = request.form["repo_url"]
+    if not validators.url(url):
+        print("Invalid url")
+        return render_template("index.html", error="Invalid url")
 
-@app.route("/predictions", methods=['POST', 'GET'])
-def predictions():
-    if request.method == 'POST':
-        results = get_predictions.delay()
-        predictions = results.get()
+    repo = bot.fetchRepoFromURL(url)
 
-        results = get_accuracy.delay()
-        accuracy = results.get()
+    if type(repo) != pd.DataFrame:
+        return render_template("index.html", error="Repository not found")
 
-        final_results = predictions
+    ### Load model ###
+    # model = loadModel()
+    prediction = get_predictions(repo)
+    accuracy = get_accuracy(repo)
+    actual = repo["stargazers_count"]
+    return render_template("index.html", result={"prediction": prediction, "actual": actual.values[0], "accuracy": accuracy})
 
-        return render_template('result.html', accuracy=accuracy ,final_results=final_results)
 
-    return '''<form method="POST">
-    <input type="submit">
-    </form>'''
-
-if __name__ == '__main__':
-    app.run(host = '0.0.0.0',port=5100,debug=True)
+if __name__ == "__main__":
+    app.run(port="4000", debug=True)

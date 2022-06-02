@@ -1,12 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Welcome</title>
-</head>
-<body>
-<h1>Welcome to Data Engineering II Group 8.</h1>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Welcome to StarGazer!
+
+    {% endblock %}</h1>
+<h1>{% block body %} Enter the URL for a repository
+    below
+    to make a prediction: {% endblock %}</h1>
+    <form method="post">
+        <div class="form-group">
+            <label for="title">URL</label>
+            <input type="text" name="repo_url"
+                   placeholder="Repository URL" class="form-control"
+                   value="{{ request.form['repo_url'] }}"></input>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+
+
+
+
+{% if error %}
+<h2>Error: {{error}}</h2>
+    
+{% elif result %}
+    
+ {% if result %}
+ <h1>Prediction:</h1>
+ <h2>{{ result["prediction"] }}</h2>
+ <h1>Actual:</h1>
+ <h2>{{ result["actual"] }}</h2>
+ {% elif result == False %}
+     <h2>Invalid url</h2>
+     
+ {% endif %}
+
+
+{% endif %}
+
+
+{% endblock %}
