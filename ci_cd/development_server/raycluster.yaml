@@ -90,7 +90,7 @@ rsync_filter:
 initialization_commands: []
 
 # List of shell commands to run to set up each nodes.
-#setup_commands:
+setup_commands:
     # If we have e.g. conda dependencies stored in "/path1/on/local/machine/environment.yaml", we can prepare the
     # work environment on each worker by:
     #   1. making sure each worker has access to this file i.e. see the `file_mounts` section
@@ -105,8 +105,9 @@ initialization_commands: []
     # To run the nightly version of ray (as opposed to the latest), either use a rayproject docker image
     # that has the "nightly" (e.g. "rayproject/ray-ml:nightly-gpu") or uncomment the following line:
     # - pip install -U "ray[default] @ https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-2.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl"
-#    - pip install -U scikit-learn
-#    - pip install pandas
+    - pip install -U scikit-learn
+    - pip install requests
+
 
 
 # Custom commands that will be run on the head node after common setup.
