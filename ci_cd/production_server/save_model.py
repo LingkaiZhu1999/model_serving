@@ -4,7 +4,7 @@ from random import random
 
 import pandas as pd
 from typing import Tuple, Callable
-import keras
+from tensorflow import keras
 import random
 import string
 import os
