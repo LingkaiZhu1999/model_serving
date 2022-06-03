@@ -25,7 +25,7 @@ if model_wrapper.metrics:
     for key, value in model_wrapper.metrics.items():
         print(type(value))
         if type(value) == numpy.float64:
-            if value > 1:
+            if abs(value) > 1:
                 model_wrapper.metrics[key] = round(value)
             else:
                 model_wrapper.metrics[key] = round(value, 3)
