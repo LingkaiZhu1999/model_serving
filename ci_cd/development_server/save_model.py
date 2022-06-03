@@ -44,7 +44,7 @@ class ModelWrapper:
         # Round the prediction result
         return round(prediction.ravel()[0])
 
-    def save(self, dirname: str):
+    def save(self, folder: str, dirname: str):
         """Serialize both the model and the feature selection function"""
         if os.path.isdir(dirname):
             overwite = input("Dir exists, overwrite? [y/n] ")
@@ -55,7 +55,7 @@ class ModelWrapper:
                 return
 
         # Create a directory where the model will be saved
-        dir = f"{os.path.dirname(os.path.realpath(__file__))}/{dirname}"
+        dir = f"{folder}/{dirname}"
         os.mkdir(dir)
         tmp = self.model
         # Check if we can save the model with its own method
