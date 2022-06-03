@@ -36,8 +36,8 @@ class ModelWrapper:
            Expects to receive data in the same format as given by the GitHubCrawler's fetch functions
         """
         _input, label = self.redoFeatureSelection(data)
-        print(_input)
         # Scale data if it was done when training the model
+        _input = np.asarray(_input).astype('float32')
         if self.scaler:
             _input = self.scaler.transform(_input)
         prediction = self.model.predict(_input)
