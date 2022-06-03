@@ -13,6 +13,7 @@ from ray import tune
 from ray.tune.schedulers import AsyncHyperBandScheduler
 from ray.tune.integration.keras import TuneReportCallback
 
+from save_model import ModelWrapper
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 dataset = pd.read_csv('training_data.csv')
 # split into input (X) and output (y) variables
@@ -21,7 +22,7 @@ y = dataset['stargazers_count']
 scaler = MinMaxScaler()
 X = scaler.fit_transform(X, y)
 
-def train_github(config):
+def train_github(config, save_best_model):
     # https://github.com/tensorflow/tensorflow/issues/32159
     import tensorflow as tf
 
@@ -56,6 +57,16 @@ def train_github(config):
     predictions = model.predict(xTest).ravel()
     accuracy = np.mean((predictions - yTest)**2)
     tune.report(accuracy=accuracy)
+    if save_model == True:
+        model.fit(
+            X,
+            y,
+            batch_size=batch_size,
+            epochs=epochs,
+            verbose=0,
+        )
+    ModelWrapper.save("best_model")
+
 
 
 def tune_github(num_training_iterations):
@@ -79,9 +90,11 @@ def tune_github(num_training_iterations):
         },
     )
     print("Best hyperparameters found were: ", analysis.best_config)
+    return analysis.best_config
 
 
 if __name__ == "__main__":
     ray.init("auto")
-    print("ok")
-    tune_github(num_training_iterations=500)
+    best_config = tune_github(num_training_iterations=500)
+    train_github(best_config, save_best_model=True)
+
