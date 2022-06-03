@@ -131,7 +131,7 @@
    - name: Install ML packages and Ray
      become: true
      pip: 
-      name: tensorflow==2.5.3, keras==2.4.1, numpy, future, protobuf==3.20.1, ray[tune]
+      name: tensorflow==2.9.1, keras==2.9.0, numpy, future, protobuf==3.20.1, ray[tune], dill, requests, validators
    - name: Reboot to activate ray
      become: true
      reboot:
@@ -179,7 +179,7 @@
    - name: Install ML packages and Ray
      become: true
      pip:
-      name: tensorflow==2.5.3, keras==2.4.1, numpy, future, protobuf==3.20.1, ray[tune]
+      name: tensorflow==2.9.1, keras==2.9.0, numpy, future, protobuf==3.20.1, ray[tune], dill, requests, validators
    - name: Reboot to activate ray
      become: true
      reboot:

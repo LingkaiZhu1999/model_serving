@@ -12,7 +12,7 @@ from save_model import ModelWrapper
 
 def load_model():
     # load json and create model
-    loaded_model = ModelWrapper.loadModel("NN_model")
+    loaded_model = ModelWrapper.loadModel("best_model")
     return loaded_model
 
 # Celery configuration
