@@ -1,0 +1,11 @@
+version: '3.0'
+services:
+  front_end:
+    build:
+      context: .
+      dockerfile: front_end.Dockerfile
+
+    ports:
+      - 5555:5555
+    
+    
