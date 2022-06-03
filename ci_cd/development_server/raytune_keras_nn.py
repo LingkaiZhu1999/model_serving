@@ -17,17 +17,17 @@ from save_model import ModelWrapper
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 dataset = pd.read_csv('training_data.csv')
 # split into input (X) and output (y) variables
-X = dataset.drop(columns=['stargazers_count', 'id', 'private'])
-y = dataset['stargazers_count']
-scaler = MinMaxScaler()
-X = scaler.fit_transform(X, y)
+# X = dataset.drop(columns=['stargazers_count', 'id', 'private'])
+# y = dataset['stargazers_count']
+# scaler = MinMaxScaler()
+# X = scaler.fit_transform(X, y)
 
 def featureSelection(data: pd.DataFrame):
     import pandas as pd
-    wanted_keys = ['watchers_count', "watchers", 'has_issues', 'has_projects', 'has_downloads', 'has_wiki', 'has_pages',
-                   'forks_count',
-                   'archived', 'disabled', 'open_issues_count', 'allow_forking', 'is_template', 'forks', 'open_issues',
-                   'score', 'num_commit']
+    wanted_keys = ['stargazers_count', 'watchers_count', 'has_issues',
+       'has_projects', 'has_downloads', 'has_wiki', 'has_pages', 'forks_count',
+       'archived', 'disabled', 'open_issues_count', 'allow_forking',
+       'is_template', 'forks', 'open_issues', 'watchers', 'n_commits']
     labels = data["stargazers_count"]
     data = data[wanted_keys]
     return (data.to_numpy(copy=True), labels.to_numpy(copy=True))
@@ -40,6 +40,9 @@ def train_github(config, save_best_model=False):
     batch_size = 64
     num_classes = 1
     epochs = 20
+    X, y = featureSelection(dataset)
+    scaler = MinMaxScaler()
+    X = scaler.fit_transform(X, y)
     xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=.2, shuffle=True)
     # num_input_layer = X.shape[1]
     model = tf.keras.models.Sequential(

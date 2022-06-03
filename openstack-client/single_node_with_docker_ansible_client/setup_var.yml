@@ -1,4 +1,5 @@
 prod_home: /technical-training/model-serving/ci_cd/production_server
+prod_1_home: /technical-training/model-serving/ci_cd/production_server
 dev_home: /technical-training/model-serving/ci_cd/development_server
 ray_1_home: /technical-training/model-serving/ci_cd/development_server
 ray_2_home: /technical-training/model-serving/ci_cd/development_server

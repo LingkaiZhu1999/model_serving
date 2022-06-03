@@ -28,6 +28,7 @@
      git:
       repo: 'https://LingkaiZhu1999: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@github.com/LingkaiZhu1999/model_serving.git'
       dest: /model_serving
+      force: yes
 
    - name: Change ownership of a directory
      become: true
@@ -109,14 +110,92 @@
 
    - name: Running containers
      become: true
-     shell: docker-compose up --build
+     shell: docker-compose up -d
      args: 
       chdir: /model_serving/ci_cd/production_server
+   - name: Initialize the docker swarm manager
+     become: true
+     shell: docker swarm init
+     register: docker_swarm_info
+   - name: use extracted info
+     debug: msg="Adapter found, bus {{item.split('\n')[0]}}, function {{item.split('\n')[-1]}}"
+     with_items: "{{docker_swarm_info.stdout_lines}}"
+
+
 #   - name: Running Docker swarm
 #     become: true
 #     shell: docker stack deploy --compose-file docker-compose.yml prod
 #     args:
 #      chdir: /model_serving/ci_cd/production_server
+
+- hosts: prodserver1
+
+  vars_files:
+   - setup_var.yml
+  tasks:
+    - name: Extra packages
+      apt: pkg={{item}} state=latest update_cache=true
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+      become: true
+
+    - name: apt update
+      apt: update_cache=yes upgrade=dist
+      become: true
+
+    - name: Add Docker repository key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+      become: true
+
+    - name: Add Docker repository
+      command: add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+      become: true
+
+    - name: apt update
+      apt: update_cache=yes upgrade=dist
+      become: true
+
+    # Workaround pip issue with MTU mismatch, see: https://github.com/docker/docker.github.io/pull/9249/files
+    # MTU for SNIC is 1450, Docker default is 1500. Override so that Docker matches the host.
+    # We create the config file before installing, to avoid any need to restart the docker daemon.
+    - name: Create Ansible docker config directory.
+      become: true
+      file:
+        path: "/etc/docker"
+        state: directory
+
+    - name: Create Ansible docker file to configure Docker MTU to match SNIC for pip issue
+      become: true
+      copy:
+        dest: "/etc/docker/daemon.json"
+        content: |
+          {
+            "mtu": 1450
+          }
+
+    - name: Install Docker
+      apt: pkg=docker-ce state=present update_cache=true allow_unauthenticated=yes
+      become: true
+
+    - name: Download docker-compose
+      become: yes
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-{{ansible_system}}-{{ansible_architecture}}"
+        dest: /usr/local/bin/docker-compose
+        mode: +x
+#    - name: Add nodes
+#      community.docker.docker_swarm:
+#        state: join
+##        advertise_addr: prodserver
+##        join_token: SWMTKN-1--xxxxx
+#        remote_addrs: [ '192.168.2.161:2377' ]
+
+
 
 - hosts: devserver
   
@@ -161,11 +240,6 @@
      args:
        chdir: /model_serving/ci_cd/development_server
 
-#   - name: Starting the ray cluster
-#       become: true
-#       shell: ray up
-#       args:
-#         chdir: /model_serving/ci_cd/production_server
 - hosts: rayservers
 
   vars_files:
@@ -184,20 +258,6 @@
      become: true
      reboot:
        reboot_timeout: 300
-#   - name: Copy file with owner and permissions
-#     ansible.builtin.copy:
-#       src: ~/cluster-keys/cluster-key
-#       dest: ~/.ssh/id_rsa
-#       owner: appuser
-#       group: appuser
-#       mode: '0600'
-#   - name: Generate ssh keys for ray cluster
-#     shell: ssh-keygen -q -t rsa -f /home/appuser/.ssh/id_rsa -C "" -N "" -y
-
-#   - name: Copy public key to authorized keys
-#     shell: cat id_rsa.pub >> authorized_keys
-#     args:
-#       chdir: /home/appuser/.ssh
    - name: Init ray
      shell: python3 ray_init.py
      args:
