@@ -22,6 +22,17 @@ y = dataset['stargazers_count']
 scaler = MinMaxScaler()
 X = scaler.fit_transform(X, y)
 
+def featureSelection(data: pd.DataFrame):
+    import pandas as pd
+    wanted_keys = ['watchers_count', "watchers", 'has_issues', 'has_projects', 'has_downloads', 'has_wiki', 'has_pages',
+                   'forks_count',
+                   'archived', 'disabled', 'open_issues_count', 'allow_forking', 'is_template', 'forks', 'open_issues',
+                   'score', 'num_commit']
+    labels = data["stargazers_count"]
+    data = data[wanted_keys]
+    return (data.to_numpy(copy=True), labels.to_numpy(copy=True))
+
+
 def train_github(config, save_best_model):
     # https://github.com/tensorflow/tensorflow/issues/32159
     import tensorflow as tf
@@ -65,7 +76,8 @@ def train_github(config, save_best_model):
             epochs=epochs,
             verbose=0,
         )
-    ModelWrapper.save("best_model")
+    model_wrapper = ModelWrapper(model, featureSelection)
+    model_wrapper.save("best_model")
 
 
 
