@@ -1,7 +1,7 @@
 FROM python:latest
 
 WORKDIR /src
-RUN pip install flask pandas validators requests dill keras numpy tensorflow
+RUN pip install flask pandas validators requests dill keras numpy tensorflow scikit-learn
 COPY *.py .
 COPY templates/ templates
 COPY best_model/ best_model
