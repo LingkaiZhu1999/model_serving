@@ -1,4 +1,5 @@
 
+from pickle import NONE
 import dill as pickle
 from random import random
 
@@ -24,11 +25,13 @@ class ModelWrapper:
 
        To make predictions with this wrapper, simply use the predict method"""
 
-    def __init__(self, model, featureSelectionFunction: Callable[[pd.DataFrame], Tuple[np.ndarray, np.ndarray]], scaler=None) -> None:
+    def __init__(self, model, featureSelectionFunction: Callable[[pd.DataFrame], Tuple[np.ndarray, np.ndarray]], scaler=None, metrics=None) -> None:
         self.model = model
         self.redoFeatureSelection = featureSelectionFunction
         self.object_name = "".join(random.choices(string.ascii_letters, k=7))
         self.scaler = scaler
+
+        self.metrics = metrics
 
     def predict(self, data: pd.DataFrame) -> np.ndarray:
         """Predict result on new data.
