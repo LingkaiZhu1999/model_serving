@@ -117,16 +117,16 @@
      become: true
      shell: docker swarm init
      register: docker_swarm_info
-   - name: use extracted info
-     debug: msg="Adapter found, bus {{item.split('\n')[0]}}, function {{item.split('\n')[-1]}}"
-     with_items: "{{docker_swarm_info.stdout_lines}}"
+#   - name: use extracted info
+#     debug: msg="Adapter found, bus {{item}}"
+#     with_items: "{{docker_swarm_info.stdout_lines[4]}}"
 
 
-#   - name: Running Docker swarm
-#     become: true
-#     shell: docker stack deploy --compose-file docker-compose.yml prod
-#     args:
-#      chdir: /model_serving/ci_cd/production_server
+   - name: Running Docker swarm
+     become: true
+     shell: docker stack deploy --compose-file docker-compose.yml prod
+     args:
+      chdir: /model_serving/ci_cd/production_server
 
 - hosts: prodserver1
 
@@ -188,13 +188,9 @@
         url: "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-{{ansible_system}}-{{ansible_architecture}}"
         dest: /usr/local/bin/docker-compose
         mode: +x
-#    - name: Add nodes
-#      community.docker.docker_swarm:
-#        state: join
-##        advertise_addr: prodserver
-##        join_token: SWMTKN-1--xxxxx
-#        remote_addrs: [ '192.168.2.161:2377' ]
-
+#    - name: Join docker swarm cluster
+#      shell: {{item}}
+#      with_items: "{{docker_swarm_info.stdout_lines[4]}}"
 
 
 - hosts: devserver

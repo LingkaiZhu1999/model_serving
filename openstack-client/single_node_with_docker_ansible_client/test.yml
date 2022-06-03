@@ -1,0 +1,27 @@
+- hosts: prodserver
+
+  vars_files:
+   - setup_var.yml
+
+  tasks:
+   - name: Initialize the docker swarm manager
+     become: true
+     shell: docker swarm init
+     register: docker_swarm_info
+   - name: use extracted info
+     debug: msg="Adapter found, bus {{item}}"
+     with_items: "{{docker_swarm_info.stdout_lines[4]}}"
+
+- hosts: prodserver1
+
+  vars_files:
+   - setup_var.yml
+  tasks:
+    - name: test
+      shell:
+        var: hostvars[item]['docker_swarm_info']['stdout_lines'][4]
+      with_items: groups['prodserver']
+#   - name: Join docker swarm cluster
+#     shell: "{{ item }}"
+#     with_items: "{{docker_swarm_info.stdout_lines[4]}}"
+#       var: hostvars[item]['docker_swarm_info']['stdout_lines']
