@@ -1,13 +1,14 @@
 Flask
 amqp
 celery
-tensorflow==2.5.3 
-keras==2.4.1
+tensorflow==2.9.1
+keras==2.9.0
 future
 pandas
 scikit-learn
 dill
 requests
 validators
-protobuf==3.20.0
+
+
 

@@ -12,7 +12,7 @@ from save_model import ModelWrapper
 
 def load_model():
     # load json and create model
-    loaded_model = ModelWrapper.loadModel("best_model")
+    loaded_model = ModelWrapper.loadModel("NN_model")
     return loaded_model
 
 # Celery configuration
@@ -32,7 +32,7 @@ def get_predictions(input_repo):
 def get_accuracy(input_repo):
     prediction = get_predictions(input_repo)
     actual = input_repo["stargazers_count"]
-    mse = np.mean((prediction.values.ravel() - actual.values.ravel()) ** 2)
+    mse = np.mean((prediction - actual.values) ** 2)
     #print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
     return mse
 
