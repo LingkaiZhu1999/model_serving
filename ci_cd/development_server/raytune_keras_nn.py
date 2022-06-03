@@ -80,7 +80,7 @@ def train_github(config, save_best_model=False):
             verbose=0,
         )
         model_wrapper = ModelWrapper(model, featureSelection)
-        model_wrapper.save("~/my_project", "best_model")
+        model_wrapper.save("/home/appuser/my_project", "best_model")
 
 
 
