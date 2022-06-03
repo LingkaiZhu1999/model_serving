@@ -24,7 +24,7 @@ dataset = pd.read_csv('training_data.csv')
 
 def featureSelection(data: pd.DataFrame):
     import pandas as pd
-    wanted_keys = ['stargazers_count', 'watchers_count', 'has_issues',
+    wanted_keys = [ 'watchers_count', 'has_issues',
        'has_projects', 'has_downloads', 'has_wiki', 'has_pages', 'forks_count',
        'archived', 'disabled', 'open_issues_count', 'allow_forking',
        'is_template', 'forks', 'open_issues', 'watchers', 'n_commits']
