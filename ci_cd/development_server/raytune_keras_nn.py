@@ -39,25 +39,24 @@ def train_github(config, save_best_model=False):
 
     batch_size = 64
     num_classes = 1
-    epochs = 2000
+    epochs = 20
+    xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=.2, shuffle=True)
+    # num_input_layer = X.shape[1]
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Dense(40, activation="relu"),
+            tf.keras.layers.Dense(config["hidden"], activation="relu"),
+            tf.keras.layers.Dropout(0.03),
+            tf.keras.layers.Dense(10, activation="relu"),
+            tf.keras.layers.Dense(num_classes, activation="relu"),
+        ]
+    )
+
+    model.compile(
+        loss="mse",
+        optimizer=tf.keras.optimizers.Adam(learning_rate=config["lr"]),
+    )
     if save_best_model == False:
-        xTrain, xTest, yTrain, yTest = train_test_split(X, y, test_size=.2, shuffle=True)
-        # num_input_layer = X.shape[1]
-        model = tf.keras.models.Sequential(
-            [
-                tf.keras.layers.Dense(40, activation="relu"),
-                tf.keras.layers.Dense(config["hidden"], activation="relu"),
-                tf.keras.layers.Dropout(0.03),
-                tf.keras.layers.Dense(10, activation="relu"),
-                tf.keras.layers.Dense(num_classes, activation="relu"),
-            ]
-        )
-
-        model.compile(
-            loss="mse",
-            optimizer=tf.keras.optimizers.Adam(learning_rate=config["lr"]),
-        )
-
         model.fit(
             xTrain,
             yTrain,
@@ -77,8 +76,8 @@ def train_github(config, save_best_model=False):
             epochs=epochs,
             verbose=0,
         )
-    model_wrapper = ModelWrapper(model, featureSelection)
-    model_wrapper.save("best_model")
+        model_wrapper = ModelWrapper(model, featureSelection)
+        model_wrapper.save("best_model")
 
 
 
@@ -93,7 +92,7 @@ def tune_github(num_training_iterations):
         scheduler=sched,
         metric="accuracy",
         mode="min",
-        num_samples=15,
+        num_samples=5,
         resources_per_trial={"cpu": 2, "gpu": 0},
         stop={ "training_iteration": num_training_iterations},
         config={
