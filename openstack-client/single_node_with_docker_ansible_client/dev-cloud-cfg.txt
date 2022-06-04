@@ -1,0 +1,13 @@
+#cloud-config
+
+
+users:
+ - name: appuser
+   sudo: ALL=(ALL) NOPASSWD:ALL
+   home: /home/appuser
+   shell: /bin/bash
+   ssh_authorized_keys:
+     - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD3256KbmsfL1aNEJk8cmJfTYbIBEb1hvYQagifVCR9J4NbKgEDYdfrPzos67pDE4axpx2WuttthIEaJjXOFRW+Yvcz6EF55lLTpz6fB6O4mPgqGTPkrRY7h2gdiV0DcHNk3BXQYdOkNrp7bCuaqpJZbUk6giqfkAEkfXrhUf+dsDa3krTFi2/a/G8ViOwg+Oi7u6RvaGb03xD2u9wXTgHloLbaGjk9+mN/tjD6od6VYho3J3Zo6zvQ8a/CUYChSVODPBv72d5TMB7Q+KSyu9q1E/D7eBJWmPBgzEEsG7zqv/n0sho7vMYvGO/bVhrxbQ/ftFv6cMLn2CJQBeSHH9VMxT5eV2qhun8NL8zebR1JViL7dYvRWPsFnjHPhTh14UDGtnY7cxlh21rnwRojI00+5yRT7gvy2oRWlPaAX4rxnqLOU9Nq1ljTNfcGKFMd6O8Pyo66LsmIY4oMdeOyFbXJzqSXUO3fVjr8njIS3GIFquvJ3kTTfqPI1X6nTOFxSwc= ubuntu@group8-ansible-client
+
+byobu_default: system
+
