@@ -85,7 +85,8 @@ def train_github(config, save_best_model=False):
         mean_absolute_error = np.mean(np.abs(predictions - yTest))
         mean_absolute_percentage_error_ = mean_absolute_percentage_error(yTest, predictions)
         metrics = {"mean_squared_error": mean_squared_error, "mean_absolute_error": mean_absolute_error, "mean_absolute_percentage_error": mean_absolute_percentage_error_}
-        model_wrapper = ModelWrapper(model, featureSelection, metrics)
+        model_wrapper = ModelWrapper(model, featureSelection, scaler, metrics)
+        print(metrics)
         model_wrapper.save("/home/appuser/my_project", "best_model")
 
 
