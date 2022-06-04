@@ -11,6 +11,7 @@ import os
 import numpy as np
 import fnmatch
 import shutil
+from sklearn.preprocessing import MinMaxScaler
 
 from fetch_data import GithubCrawler
 
@@ -37,7 +38,8 @@ class ModelWrapper:
         """
         _input, label = self.redoFeatureSelection(data)
         # Scale data if it was done when training the model
-        _input = np.asarray(_input).astype('float32')
+        # scaler = MinMaxScaler()
+        # _input = scaler.fit_transform(_input, label)
         if self.scaler:
             _input = self.scaler.transform(_input)
         prediction = self.model.predict(_input)

@@ -47,16 +47,17 @@ class ModelWrapper:
 
     def save(self, folder: str, dirname: str):
         """Serialize both the model and the feature selection function"""
-        if os.path.isdir(dirname):
+        dir = f"{folder}/{dirname}"
+        if os.path.isdir(dir):
             overwite = input("Dir exists, overwrite? [y/n] ")
             if overwite.lower() == "y":
-                shutil.rmtree(dirname)
+                shutil.rmtree(dir)
             else:
                 print("=== Aborting ===")
                 return
 
         # Create a directory where the model will be saved
-        dir = f"{folder}/{dirname}"
+        # dir = f"{folder}/{dirname}"
         os.mkdir(dir)
         tmp = self.model
         # Check if we can save the model with its own method

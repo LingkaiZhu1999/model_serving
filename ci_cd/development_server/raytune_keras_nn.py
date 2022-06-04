@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow import keras
 import numpy as np
 from tensorflow.keras.models import model_from_json
+from sklearn.metrics import mean_absolute_percentage_error
 
 import ray
 from ray import tune
@@ -73,13 +74,18 @@ def train_github(config, save_best_model=False):
         tune.report(accuracy=accuracy)
     else:
         model.fit(
-            X,
-            y,
+            xTrain,
+            yTrain,
             batch_size=batch_size,
             epochs=epochs,
             verbose=0,
         )
-        model_wrapper = ModelWrapper(model, featureSelection)
+        predictions = model.predict(xTest).ravel()
+        mean_squared_error = np.mean((predictions - yTest) ** 2)
+        mean_absolute_error = np.mean(np.abs(predictions - yTest))
+        mean_absolute_percentage_error_ = mean_absolute_percentage_error(yTest, predictions)
+        metrics = {"mean_squared_error": mean_squared_error, "mean_absolute_error": mean_absolute_error, "mean_absolute_percentage_error": mean_absolute_percentage_error_}
+        model_wrapper = ModelWrapper(model, featureSelection, metrics)
         model_wrapper.save("/home/appuser/my_project", "best_model")
 
 
