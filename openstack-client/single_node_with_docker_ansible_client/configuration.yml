@@ -113,20 +113,20 @@
      shell: docker-compose up -d
      args: 
       chdir: /model_serving/ci_cd/production_server
-   - name: Initialize the docker swarm manager
-     become: true
-     shell: docker swarm init
-     register: docker_swarm_info
+#   - name: Initialize the docker swarm manager
+#     become: true
+#     shell: docker swarm init
+#     register: docker_swarm_info
 #   - name: use extracted info
 #     debug: msg="Adapter found, bus {{item}}"
 #     with_items: "{{docker_swarm_info.stdout_lines[4]}}"
 
 
-   - name: Running Docker swarm
-     become: true
-     shell: docker stack deploy --compose-file docker-compose.yml prod
-     args:
-      chdir: /model_serving/ci_cd/production_server
+#   - name: Running Docker swarm
+#     become: true
+#     shell: docker stack deploy --compose-file docker-compose.yml prod
+#     args:
+#      chdir: /model_serving/ci_cd/production_server
 
 - hosts: prodserver1
 

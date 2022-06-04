@@ -10,6 +10,7 @@ import validators
 import pandas as pd
 from inspect import getmodule
 from save_model import ModelWrapper
+import numpy as np
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'testing'
@@ -19,7 +20,7 @@ model_wrapper = ModelWrapper.loadModel("best_model")
 if model_wrapper.metrics:
     for key, value in model_wrapper.metrics.items():
         print(type(value))
-        if type(value) == numpy.float64:
+        if type(value) == np.float64:
             if value > 1:
                 model_wrapper.metrics[key] = round(value)
             else:
