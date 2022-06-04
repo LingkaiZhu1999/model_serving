@@ -11,12 +11,9 @@ import os
 import numpy as np
 import fnmatch
 import shutil
-<<<<<<< HEAD
 from sklearn.preprocessing import MinMaxScaler
 
-=======
 import tensorflow as tf
->>>>>>> 0cf925b4586eb1132a2d79bb69702e574601c47a
 from fetch_data import GithubCrawler
 
 
@@ -42,11 +39,8 @@ class ModelWrapper:
         """
         _input, label = self.redoFeatureSelection(data)
         # Scale data if it was done when training the model
-<<<<<<< HEAD
         # scaler = MinMaxScaler()
         # _input = scaler.fit_transform(_input, label)
-=======
->>>>>>> 0cf925b4586eb1132a2d79bb69702e574601c47a
         if self.scaler:
             _input = self.scaler.transform(_input)
         prediction = self.model.predict(_input)
